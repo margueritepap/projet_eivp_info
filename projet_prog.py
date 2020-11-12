@@ -1,5 +1,5 @@
 ## Importation des données du csv sur Python
-
+#Importer les données
 import pandas as pd #biblio pandas: pour lire les données et pouvoir les traiter
 import requests # permet de faire des requetes html en python
 import io #permet de gérer les str
@@ -11,10 +11,42 @@ download = requests.get(url).content #le télécharge
 df = pd.read_csv(io.StringIO(download.decode('utf-8'))) #lis le contenu du fichier et le change en données exploitables par pandas (dataframe=df)
 
 
-print (df) #affiche toutes les données du fichier
+# print (df) #affiche toutes les données du fichier
+#Séparer et convertir les données en listes exploitables
+
+donnees_lignes = df.values.tolist()
+tete=df.columns.values.tolist()
+print (donnees_lignes)
+print(tete)
+
+#On doit maintenant remplacer les ; par des ,
+#obsolète
+def virgule(D): #remplace les ; par des ,
+    l=len(D)
+    A=[]
+    n=0
+    for k in range (l):
+        i=D[k][0]
+        n=i.replace(';',',')
+        A+=[[n]]
+    return A
+
+def preleve_colonne(D,n): #prélève la colonne n du tableau D et la renvoie sous forme d'une liste
+    l=len(D)
+    a=D[0][0] #on sépare les entètes du reste du tableau
+    b=[a.split(';')]
+    c=b[0][n]
+    S=[c]
+    for k in range (1,l):
+        a=D[k][0]
+        b=[a.split(';')] #change les ; en ,
+        c=float(b[0][n]) #change le str en chiffre
+        S+=[c]
+    return S
+
 
 ## Evolution d’une variable en fonction du temps
-
+#Convertir
 ## Calcul des valeurs statistiques
 from math import * #pour le calcul de l'écart type
 
@@ -70,7 +102,8 @@ def ecart_type(L):
     return sqrt(v)
 
 ## Calcul de l'indice “humidex”
-#Extraction des temrératures et des taux d'humidité
+#Extraction des températures et des taux d'humidité
+
 
 #Fonction de calcul de humidex
 def indice_humidex (T,H):#prend en arguments la liste de Temp et de %Hum
@@ -105,16 +138,9 @@ def indice_correlation_Barvais_Pearson(A,B): #pour les valeurs régulières, peu
     cov=covariance(A,B)
     return cov/(ea*eb)
 
-def indice_mini(L): #renvoie le rang du plus petit élément (le premier dans le cas où il apparait plusieurs fois)
-    l=len(L)
-    mini=L[0]
-    ind=1
-    for k in range (1,l):
-        if L[k]<mini:
-            ind=k+1
-            mini=L[k]
-    return mini,ind #renvoie la valeur et le rang du min
+#Calcul de l'indice de corrélation de Spearman:
 
+#pour des valeurs qui présentent des irrégularités, permet de mettre en évidence une relation non lénaire
 def tri_rapide(L):
     if L==[]:
         return L
@@ -143,8 +169,6 @@ def liste_rang(L): #renvoie la liste des rangs des éléments de L
     for k in range (l):
         LR+=[rang(L[k],T)]
     return LR
-
-#Calcul de l'indice de corrélation de Spearman:
 
 def indice_correlation_Spearman(A,B):
     LA=liste_rang(A)
