@@ -15,9 +15,9 @@ df = pd.read_csv(io.StringIO(download.decode('utf-8'))) #lis le contenu du fichi
 #Séparer et convertir les données en listes exploitables
 
 donnees_lignes = df.values.tolist()
-tete=df.columns.values.tolist()
+entete=df.columns.values.tolist()
 print (donnees_lignes)
-print(tete)
+print(entete)
 
 #On doit maintenant remplacer les ; par des ,
 #obsolète
@@ -51,6 +51,8 @@ def preleve_colonne(D,n): #prélève la colonne n du tableau D et la renvoie sou
 from math import * #pour le calcul de l'écart type
 
 def min(L):
+    if len(L)==0:
+        return('La liste est vide ')
     m=L[0]
     for k in range (len(L)):
         t=L[k]
@@ -59,6 +61,8 @@ def min(L):
     return m
 
 def max(L):
+    if len(L)==0:
+        return('La liste est vide ')
     m=L[0]
     for k in range (len(L)):
         t=L[k]
@@ -68,6 +72,8 @@ def max(L):
 
 def moyenne(L):
     l=len(L)
+    if l==0:
+        return 'La liste est vide'
     m=0
     for k in range (l):
         m+=L[k]
