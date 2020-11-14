@@ -1,4 +1,4 @@
-## Importation des données du csv sur Python
+##Importation des données du csv sur Python
 #Importer les données
 import pandas as pd #biblio pandas: pour lire les données et pouvoir les traiter
 import requests # permet de faire des requetes html en python
@@ -8,11 +8,10 @@ import io #permet de gérer les str
 url = "https://raw.githubusercontent.com/margueritepap/projet_eivp_info/main/donnees.csv" # prend le fichier csv depuis git
 download = requests.get(url).content #le télécharge
 
-df = pd.read_csv(io.StringIO(download.decode('utf-8'))) #lis le contenu du fichier et le change en données exploitables par pandas (dataframe=df)
+df = pd.read_csv(io.StringIO(download.decode('utf-8'))) #lis le contenu du fichier et le change en données exploitables par Pandas (dataframe=df)
 
 
-# print (df) #affiche toutes les données du fichier
-
+#print (df) #affiche toutes les données du fichier
 #Séparer et convertir les données en listes exploitables
 
 donnees_lignes = df.values.tolist()
@@ -21,11 +20,11 @@ entete=df.columns.values.tolist()
 #print(entete)
 
 #Isoler les colonnes nécessaires
-def preleve_colonne(D,n): #prélève la colonne n du tableau D et la renvoie sous forme d'une liste (sans entete)
+def preleve_colonne(D,n): #prélève la colonne n du tableau D et la renvoie sous forme d'une liste
     l=len(D)
     a=D[0][0] #on sépare les entètes du reste du tableau
     b=[a.split(';')]
-    c=float(b[0][n])
+    c=b[0][n]
     S=[c]
     for k in range (1,l):
         a=D[k][0]
@@ -36,94 +35,8 @@ def preleve_colonne(D,n): #prélève la colonne n du tableau D et la renvoie sou
 
 
 ## Evolution d’une variable en fonction du temps
-#Récupérer la colonne des dates
-def virgule(D): #remplace les ; par des ,
-    l=len(D)
-    A=[]
-    n=0
-    for k in range (l):
-        i=D[k][0]
-        n=i.replace(';',',')
-        A+=[[n]]
-    return A
+#Convertir la liste de dates en liste de temps
 
-def recup_date(L): #récupère la colonne de dates de L
-    D=virgule(L)
-    l=len(E)
-    I=[]
-    for k in range (l):
-        i=D[k][0]
-        e=i.split(',')
-        I+=[e[7]]
-    return I
-
-#Récupérer séparément les heures et les dates
-def divise_dh(L): #sépare l'heure de la date
-    l=len(L)
-    D=[]
-    for k in range (l):
-        h=L[k]
-        a=h.split()
-        D+=[a]
-    return D
-
-def preleve_jours(L): #prélève toutes les dates sans les horaires
-    l=len(L)
-    D=divise_dh(L)
-    J=[]
-    for k in range (l):
-        J+=[D[k][0]]
-    return J
-
-def preleve_horaires(L):  #renvoie la liste des horaires
-    l=len(L)
-    D=divise_dh(L)
-    H=[]
-    for k in range (l):
-        h=D[k][1]
-        T=h.split('+')
-        t=T[0]
-        H+=[t]
-    return H
-
-#Calcul des instants des mesures
-
-def timming(L):  #prend en argument un tableau L envoie la liste des instants de mesure
-    D=recup_date(L)
-    H=preleve_horaires(D)
-    l=len(D)
-    t=0
-    a=H[0].split(':')
-    h=float(a[0]) #heure de la 1ere mesure
-    m=float(a[1]) #minute de la 1ere mesure
-    s=float(a[2]) #seconde de la 2ere mesure
-    T=[] #liste des timmings de mesure
-    hh=0
-    mm=0
-    ss=0
-    jj=0
-    for k in range (l):
-        b=H[k].split(':')
-        ss=round(float(b[2])-s) #pour chaque mesure on calcule à quel t elle a été réalisée si la première a été réalisée à t=0
-        if ss<0:
-            ss=ss+60
-            mm=mm-1
-        mm+=round(float(b[1])-m)
-        if mm<0:
-            mm=mm+60
-            hh=hh-1
-        hh+=round(float(b[0])-h)
-        if hh>23:
-            hh=0
-            jj+=1
-        sss=str(ss)
-        mmm=str(mm)
-        hhh=str(hh)
-        jjj=str(jj)
-        U=[jjj,hhh,mmm,sss]
-        t=':'.join(U)
-        T+=[t]
-    return T
 ## Calcul des valeurs statistiques
 from math import * #pour le calcul de l'écart type
 
@@ -186,23 +99,21 @@ def ecart_type(L):
 
 ## Calcul de l'indice “humidex”
 #Extraction des températures et des taux d'humidité
-T=preleve_colonne(donnees_lignes,3)
-H=preleve_colonne(donnees_lignes,4)
+
 
 #Fonction de calcul de humidex
 
-def indice_humidex(T,H):
-    l=len(T)
-    humi=[]
-    for k in range (l):
+def indice_humidex_infructueux (T,H):#prend en arguments la liste de Temp et de %Hum
+    t=T[0]
+    h=H[0]
+    hum=[] #liste des indices humidex pour chaque paire temp/%humidité
+    for k in range (len(T)):
+        I=(log(t/100)+((17.27*t)/(237.3+t)))/17.27
+        rosee=(237.3*I)/(1-I)
+        hum+=t+0.5555*(6.11*exp(5417.753*(1/273.16-1/(273.15+rosee)))-10)
         t=T[k]
         h=H[k]
-        a=10**(7.5*t/(237.7+t))
-        i=t+((5/9)*((6.112*a*h/100)-10))
-        hum=round(i)
-        humi+=[hum]
-    return humi
-
+    return hum
 
 ## Calcul de l’indice de corrélation entre un couple de variables
 
