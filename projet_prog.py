@@ -99,7 +99,7 @@ def variance(L):
 
 def ecart_type(L):
     v=variance(L)
-    return sqrt(v)
+    return math.sqrt(v)
 
 ## Calcul de l'indice “humidex”
 #Extraction des températures et des taux d'humidité
@@ -163,7 +163,6 @@ def rang(a,L): #donne le rang de la première apparaition l'élément a dans la 
 
 def liste_rang(L): #renvoie la liste des rangs des éléments de L
     T=tri_rapide(L)
-    r=0
     l=len(L)
     LR=[]
     for k in range (l):
