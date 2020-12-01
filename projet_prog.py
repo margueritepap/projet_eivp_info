@@ -75,15 +75,16 @@ def moyenne(L):
 
 def mediane(L):
     l=len(L)
+    T=tri_rapide(L)
     m=int(l%2) #parité du nb d'éléments de la liste
     if l!=0:
         if m==0: #si nb pair d'éléments
             i=int(l/2)
-            mo=(L[i-1]+L[i+1])/2
+            mo=(T[i-1]+T[i+1])/2
             return int(mo)
         else: #si nb impaire d'éléments
             i=int((l-1)/2)
-            return L[i]
+            return T[i]
     return "La liste est vide"
 
 def variance(L):
